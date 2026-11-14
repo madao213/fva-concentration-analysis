@@ -46,4 +46,25 @@ class PreparationTests(unittest.TestCase):
             self.assertAlmostEqual(vals[('JPN','C26')],.028)
             self.assertAlmostEqual(vals[('WXD','B06')],-.009)
 
+    def test_multiple_year_csv_files_and_zip(self):
+        import zipfile
+        columns=['EXPORTING_AREA','TIME_PERIOD','EXPORTING_ACTIVITY',
+                 'VALUE_ADDED_SOURCE_AREA','VALUE_ADDED_SOURCE_ACTIVITY','OBS_VALUE']
+        with tempfile.TemporaryDirectory() as td:
+            root=Path(td);src=root/'split';src.mkdir()
+            for year in [1995,1996]:
+                with (src/f'EXGRVA_{year}.csv').open('w',newline='') as f:
+                    writer=csv.writer(f);writer.writerow(columns)
+                    writer.writerow(['JPN',year,'C26','CHN','C26',str(year/1000)])
+            out=root/'combined.csv.gz'
+            count,groups=prepare(src,out,strict=False)
+            self.assertEqual((count,groups),(2,2))
+            with gzip.open(out,'rt') as f:self.assertEqual(len(list(csv.DictReader(f))),2)
+            archive=root/'oecd.zip'
+            with zipfile.ZipFile(archive,'w') as z:
+                for year in [1995,1996]:
+                    z.write(src/f'EXGRVA_{year}.csv',arcname=f'EXGRVA_{year}.csv')
+            n,group_count=prepare(archive,root/'zipped.csv.gz',strict=False)
+            self.assertEqual((n,group_count),(2,2))
+
 if __name__=='__main__': unittest.main()
