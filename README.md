@@ -96,6 +96,24 @@ HHI describes the *distribution of foreign value added*. It does not directly me
 
 
 
+
+### Full retained-input audit (completed)
+
+An independent local streaming audit has now processed **all 5,376,000 rows** of the retained prepared EXGRVA matrix and recomputed every industry-year geographic, industry and joint HHI, together with all annual equal-weighted/pooled/no-WXD HHIs. Against the published result CSVs, the greatest reported HHI difference was **less than 5 × 10⁻¹³**; all **1,344** exporter-industry-year groups contained **4,000** source-area/source-industry cells. There were **1,128** negative-value cells before clipping, summing to **−268.547 USD million**. See `audit/reports/retained_matrix_validation.json` and the standalone `audit/validate_retained_matrix.py` audit script. No raw OECD data have been posted to the repository.
+
+The retained **historical Parquet** file was also confirmed locally to contain **14,784,000 rows**, **121** Parquet row groups, and the five needed source/target dimensions plus `MEASURE`, `UNIT_MEASURE`, `FREQ`, `OBS_VALUE` and `UNIT_MULT`. See `audit/reports/historical_parquet_metadata.json` for the file fingerprints and schema. **Only its metadata were checked:** its underlying records were not decoded in this environment, so comparison of raw Parquet observations against the prepared joint matrix remains outstanding.
+
+To re-run the checked prepared-matrix audit after obtaining the retained file:
+
+```bash
+python audit/validate_retained_matrix.py \
+  --matrix /path/to/EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz \
+  --results results \
+  --report audit_output/retained_matrix_validation.json
+```
+
+**Verification boundary:** The published work is verified end-to-end **from the retained prepared joint matrix**; reconstruction **starting with OECD raw input files or historical raw Parquet is not yet fully empirically verified**. The upstream conversion program is present and its smaller synthetic cases pass; do not interpret those tests as confirmation that raw-to-prepared 14.784m-to-5.376m data conversion matches every cell.
+
 ## End-to-end source preparation (OECD export -> manuscript)
 
 The repository now includes a *source-preparation program* and a **single-command local workflow**. This program is distinct from the previously reconstructed analysis-only code.
