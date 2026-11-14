@@ -108,7 +108,7 @@ def prepare(source:Path, output:Path, strict:bool=True):
         if 'UNIT_MEASURE' in mapping:filters.append("CAST("+col('UNIT_MEASURE')+" AS VARCHAR)='USD'")
         if 'FREQ' in mapping:filters.append("CAST("+col('FREQ')+" AS VARCHAR)='A'")
         cond=' AND '.join(filters)
-        con.execute('CREATE TEMP VIEW selected AS SELECT '+
+        con.execute('CREATE TEMP TABLE selected AS SELECT '+
             ','.join([
             'CAST('+col('EXPORTING_AREA')+' AS VARCHAR) AS EXPORTING_AREA',
             'CAST('+col('TIME_PERIOD')+' AS VARCHAR) AS TIME_PERIOD',
