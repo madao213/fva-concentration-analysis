@@ -93,3 +93,28 @@ Using the retained prepared matrix locally, the reconstructed analysis matched, 
 ## Interpretation
 
 HHI describes the *distribution of foreign value added*. It does not directly measure substitutability, disruption costs, or political vulnerability. Cite the accompanying research paper when using its findings and OECD TiVA for the underlying data.
+
+
+## Historical audit and supplementary scripts (restored)
+
+The original research also produced independent audit and supplementary scripts. Four have now been **adapted** for this repository, rather than uploaded as unmodified notebook-era drafts:
+
+| Script | Purpose | Data required |
+|---|---|---|
+| `audit/verify_joint.py` | Joint-matrix key counts, 4,000 pair cells per exporter–industry–year, negatives, and HHI endpoint checks | Prepared EXGRVA `.csv.gz` |
+| `audit/verify_parquet_vs_joint.py` | Compare historical Parquet observations to matching cells in the later prepared matrix by five-dimensional key | Historical OECD Parquet **and** prepared EXGRVA `.csv.gz` |
+| `supplementary/build_supp.py` | Annual top-10 source pairs, pair persistence, endpoint Jaccard overlap, pooled WXD checks, including Japan C26 | Prepared EXGRVA `.csv.gz` |
+| `supplementary/jpn_c26_decomposition.py` | Japanese C26 exports: breakdown of China-origin FVA by contributing source industry, and China share of **all** foreign FVA | Prepared EXGRVA `.csv.gz` |
+
+Run them only after obtaining the locally held prepared matrix (and historical Parquet for the cross-format comparison):
+
+```bash
+python audit/verify_joint.py --input data/EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz --output audit_output
+python audit/verify_parquet_vs_joint.py --parquet /path/to/Joint_Analysis_1995_2022.parquet --joint data/EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz --output audit_output/parquet_comparison
+python supplementary/build_supp.py --input data/EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz --output supplementary_output
+python supplementary/jpn_c26_decomposition.py --input data/EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz --output supplementary_output/jpn_c26
+```
+
+The C26 decomposition uses the **retained positive-cell prepared matrix**. The older study's `_T` OECD total reconciliation on raw Parquet categories was a separate operation and is **not** silently claimed as implemented here. The cross-format script tests agreement on shared dimension keys; it does not validate classification design. Original scripts contained machine-local paths and `artifact_tool` spreadsheet exports. These portable adaptations write CSVs and do **not** need that private spreadsheet package.
+
+GitHub Actions validates Python syntax, the numerical tables committed with this repository, and synthetic unit tests. It **does not** run the large private-input audit on GitHub, because the underlying data are not published here. Experimental COVID-shock and reallocation scripts are intentionally excluded from the formal paper replication package.
