@@ -4,7 +4,7 @@
 
 This repository accompanies the study *Geographic, Industrial, and Joint Concentration of Foreign Value Added in Manufacturing Exports* by Ming Yang. It analyzes foreign value added (FVA) in manufacturing exports from **China, Japan, and the United States, 1995–2022**, using the **OECD Trade in Value Added (TiVA), 2025 edition, January 2026 revision**, **EXGRVA** indicator.
 
-> **Reproducibility status:** This is a **reconstructed analysis-stage replication package**, not a claim that the original end-to-end source scripts have been recovered. The calculations were rerun using a retained prepared source-economy × source-industry matrix and their principal results checked against the paper. The full input matrix is **not** publicly redistributed. Raw OECD retrieval, classification harmonization and original upstream reconciliation are not included.
+> **Reproducibility status:** The study's analysis-stage code and an upstream OECD data-preparation program have been **reconstructed**; the original historical source scripts have **not** all been recovered. The calculations were rerun using a retained prepared source-economy × source-industry matrix and their principal results checked against the paper. The full input matrix is **not** publicly redistributed. Direct OECD auto-download is not included. Upstream source-to-prepared-matrix conversion is implemented, but has not been fully validated against the original OECD files.
 
 ## Research question
 
@@ -56,7 +56,7 @@ Excluding residual source-area category **WXD** and renormalizing source shares 
 
 The prepared matrix excludes domestic value-added cells. Small negative value-added observations are clipped to zero **at the individual cell level**. The baseline includes `WXD`; a sensitivity check excludes it and recomputes the shares. The script verifies expected 3 × 16 × 28 coverage.
 
-**Important:** The repository cannot regenerate the original prepared input from OECD raw downloads, nor does it reproduce the source-level reconciliation or industry-code mapping. Reproducing the full pipeline requires additional upstream materials. Do not publicly redistribute OECD data without checking its terms.
+**Important:** A reconstruction program for the upstream selection and normalization is now provided in `src/prepare_exgrva.py`, with a full local workflow in `src/run_pipeline.py`. This upstream stage has not yet been independently benchmarked against the complete original OECD download. The source-category lists are explicit rather than dynamically inferred; they preserve the study's selected scope. Do not publicly redistribute OECD data without checking its terms.
 
 ## Run the analysis
 
@@ -93,6 +93,58 @@ Using the retained prepared matrix locally, the reconstructed analysis matched, 
 ## Interpretation
 
 HHI describes the *distribution of foreign value added*. It does not directly measure substitutability, disruption costs, or political vulnerability. Cite the accompanying research paper when using its findings and OECD TiVA for the underlying data.
+
+
+
+## End-to-end source preparation (OECD export -> manuscript)
+
+The repository now includes a *source-preparation program* and a **single-command local workflow**. This program is distinct from the previously reconstructed analysis-only code.
+
+### Obtain the correct upstream dataset
+
+Use the OECD Data Explorer dataset **Trade in Value Added (TiVA) 2025 edition: Origin of value added in gross exports**, **EXGRVA**, revised January 2026:
+
+https://data-explorer.oecd.org/vis?df%5Bag%5D=OECD.STI.PIE&df%5Bds%5D=DisseminateFinalDMZ&df%5Bid%5D=DSD_TIVA_EXGRVA%40DF_EXGRVA
+
+The OECD interface currently lists seven *CSV ZIP* source files for 1995–1998, 1999–2002, 2003–2006, 2007–2010, 2011–2014, 2015–2018 and 2019–2022. Download the **EXGRVA** files, **not** EXGR_FVA or EXGR_FVASH (these are different indicators). Alternatively, the retained historical `Joint_Analysis_1995_2022.parquet` may be used if it is locally available.
+
+**Caution:** These files can be very large; reserve sufficient storage and time. OECD may change API/export file locations. This repository does not publish the files and does not claim to automatically download an unverified URL.
+
+### End-to-end local run
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+
+# Save OECD's seven EXGRVA ZIP files in a local directory, e.g.:
+# /path/to/oecd_exgrva_zips/
+# Or pass a local historical raw Parquet file.
+python src/run_pipeline.py \
+  --source /path/to/oecd_exgrva_zips/ \
+  --workspace local_replication \
+  --reference /path/to/EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz
+```
+
+The `--reference` argument is **optional**, but **strongly recommended** when the retained historical matrix is available. It requests a full cell-level comparison of the regenerated matrix against the original analysis input. If either missing rows or numerical mismatches are found, the run fails instead of silently replacing a reference.
+
+The workflow:
+
+1. Reads OECD EXGRVA raw CSV, split CSV ZIPs, or historical Parquet, selecting **CHN, JPN, USA**, **1995–2022**, **16 non-overlapping manufacturing export industries**, **50 source industries**, and **80 foreign source-area categories per exporter**.
+2. Excludes domestic source value added, removes overlapping source-industry subtotals, and expects **5,376,000** unique cells in **1,344** exporter–industry–year groups. Retains negative source-cell values until the analysis-stage clipping rule.
+3. Writes the local prepared matrix `EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz`, with source codes as labels and data values rounded to 3 decimal places of USD millions to correspond to the retained prepared input.
+4. Optionally compares all five-dimensional keys and cell values to the historical reference matrix (tolerance 0.0011 USD million).
+5. Runs matrix-audit checks and the three HHI calculations.
+6. Checks manuscript numerical benchmarks and generates Tables 1–4, Figures 1–3, source-pair persistence and Japan C26 supplementary analyses.
+7. Writes a **local** `run_manifest.json` with the prepared file SHA-256 and whether historic-reference comparison was performed.
+
+If the official input format, measurement units, missing cells, or paper benchmark values do not match what the study used, the script should fail and the discrepancy must be investigated, **not** normalized away.
+
+### What has and has not been verified
+
+- The current public GitHub workflow passes Python compilation, synthetic OECD CSV/ZIP ingestion tests, the previously committed manuscript numerical checks, and image/table generation.
+- The source-preparation script was reconstructed from historical artifacts and final selection rules. The full **original seven OECD ZIPs were not retained** in this public repository. The historical Parquet is held privately, and source-level conversion from that complete file has **not yet been executed and independently verified in this environment**.
+- Therefore the repository has an **implemented end-to-end reconstruction path**, **not yet a verified end-to-end replication from the original OECD download**. This distinction is intentional and must remain in any public description of the research.
 
 
 ## Historical audit and supplementary scripts (restored)
