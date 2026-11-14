@@ -21,8 +21,11 @@
   "prepared_matrix_sha256": "5119450c2dd0b8c24b354c8a2e69d5d4948837a0218035012dc4f7e0c90c4e3d",
   "prepared_matrix_cells_checked": 5376000,
   "source_values_comparison_completed": true,
-  "warning": "A historical full Parquet-to-prepared-matrix comparison passed on 2026-11-07. This session independently inspected only the Parquet footer; it did not re-run the entire comparison. The reconstructed source-preparation code and OECD ZIP acquisition remain separately unverified.",
+  "warning": "Original CSV to historical Parquet (2026-11-15) and historical Parquet to selected prepared matrix (2026-11-07) each have independent full-data verification evidence. The newly reconstructed one-command source pipeline has not itself undergone a continuous full-data production run.",
   "historical_reconciliation_completed_on": "2026-11-07",
   "historical_reconciliation_status": "PASS: 5,376,000 matched; zero missing, duplicates, or cell-value mismatches",
-  "source_values_comparison_execution": "historical_run_2026-11-07_only"
+  "source_values_comparison_execution": "historical_run_2026-11-07_only",
+  "original_csv_to_parquet_verified_on": "2026-11-15",
+  "original_csv_to_parquet_status": "PASS: all 14,784,000 complete records matched as SHA-256 record multisets, zero differences",
+  "original_csv_to_parquet_report": "audit/reports/original_csv_to_parquet_verification_2026-11-15.json"
 }
