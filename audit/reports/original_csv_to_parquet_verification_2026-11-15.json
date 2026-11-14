@@ -1,0 +1,29 @@
+{
+  "audit_date": "2026-11-15",
+  "status": "PASS",
+  "scope": "Original user-uploaded OECD EXGRVA CSV ZIP versus previously retained historical Parquet, all complete records",
+  "original_csv_name": "EXGRVA_CHN_JPN_USA_1995_2022.csv",
+  "original_zip_name": "EXGRVA_CHN_JPN_USA_1995_2022.csv.zip",
+  "historical_parquet_name": "Joint_Analysis_1995_2022.parquet",
+  "raw_csv_rows": 14784000,
+  "historical_parquet_rows": 14784000,
+  "historical_parquet_row_groups": 121,
+  "original_csv_uncompressed_bytes": 1309718819,
+  "original_csv_zip_crc32": "7a869aaf",
+  "original_zip_sha256": "efb0c9c0e8caaa00ae574fe279efb7c8c0cff45e6c3df5f2db8cdd07ffd228c6",
+  "original_csv_sha256": "f98991ba2f7cb995815cfc895a4b738e23664eb62740890ada40e64bbee83569",
+  "historical_parquet_sha256": "86062add08f0b4f09f644d52c5439231782a992014bb18b745efcc61a86257ca",
+  "method": "Read all ZIP CSV rows and all historical Parquet rows; serialize ten nonnumeric dimension columns in CSV header order as UTF-8 separated by byte 0x1f, append OBS_VALUE parsed and packed as little-endian IEEE-754 binary64, calculate SHA-256 per record, and compare sorted complete multisets (multiplicity included). Parquet decoded from Thrift metadata with system ZSTD library.",
+  "hash_bits_per_record": 256,
+  "matching_full_record_hashes": 14784000,
+  "sorted_sha256_record_differences": 0,
+  "csv_duplicate_full_records": 0,
+  "parquet_duplicate_full_records": 0,
+  "passed": true,
+  "notes": [
+    "ZIP data were streamed to EOF with CRC32 verified; the test is invariant to row order.",
+    "A 256-bit hash collision is theoretically possible but cryptographically negligible; this is a full-record hash-multiset comparison, not a literal relational join.",
+    "The test establishes equality of the exact two supplied files, not independent validation of the original OECD category selection or official upstream release provenance.",
+    "Neither raw CSV nor Parquet is published in this repository."
+  ]
+}
