@@ -1,0 +1,25 @@
+{
+  "audit_date_utc": "2026-11-14",
+  "scope": "file_footer_metadata_only",
+  "file_description": "User-retained historical Joint_Analysis_1995_2022.parquet",
+  "sha256": "86062add08f0b4f09f644d52c5439231782a992014bb18b745efcc61a86257ca",
+  "parquet_file_rows_from_footer": 14784000,
+  "parquet_row_groups": 121,
+  "schema_fields": [
+    "DATAFLOW",
+    "MEASURE",
+    "VALUE_ADDED_SOURCE_AREA",
+    "VALUE_ADDED_SOURCE_ACTIVITY",
+    "EXPORTING_AREA",
+    "EXPORTING_ACTIVITY",
+    "UNIT_MEASURE",
+    "FREQ",
+    "TIME_PERIOD",
+    "OBS_VALUE",
+    "UNIT_MULT"
+  ],
+  "prepared_matrix_sha256": "5119450c2dd0b8c24b354c8a2e69d5d4948837a0218035012dc4f7e0c90c4e3d",
+  "prepared_matrix_cells_checked": 5376000,
+  "source_values_comparison_completed": false,
+  "warning": "The historical Parquet footer was inspected locally; its 14,784,000 data rows were NOT decoded or checked against the 5,376,000 prepared cells. A Parquet engine is required for source-to-matrix reconciliation."
+}
