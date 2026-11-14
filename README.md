@@ -20,8 +20,6 @@ I also compare two ways of summarizing joint concentration across manufacturing 
 
 ## Findings
 
-The change in joint concentration between 1995 and 2022 depends partly on how the exporting industries are combined.
-
 | Exporter | Equal average of industry joint HHIs | Joint HHI after pooling manufacturing |
 | --- | ---: | ---: |
 | China | +80.5% | +8.6% |
@@ -38,7 +36,7 @@ These results describe the distribution of foreign value added. They do not by t
 
 ## Data and methods
 
-The data are from [OECD TiVA](https://www.oecd.org/en/topics/sub-issues/trade-in-value-added.html). The specific source is the EXGRVA series in the 2025 edition, revised in January 2026.
+The analysis uses the OECD EXGRVA data described above.
 
 The analysis keeps foreign sources of value added and excludes domestic sources. It uses 50 detailed source industry categories and 80 foreign source area categories for each exporter. Each country, export industry, and year has 4,000 possible source pairs.
 
