@@ -74,7 +74,7 @@ python src/verify_paper.py --results results
 python -m unittest discover -s tests -v
 ```
 
-The three PNG figures can also be regenerated **without the restricted prepared matrix** by running `python src/render_figures.py` against the public `results/` CSV files. The workflow `.github/workflows/generate-figures.yml` regenerates and commits PNGs when the analysis scripts or summary CSVs change.
+The three PNG figures can also be regenerated **without the restricted prepared matrix** by running `python src/render_figures.py` against the public `results/` CSV files. The renderer follows the figure structures in the final Writing Sample: country panels for Figures 1 and 3, and C19-vs-other-industry markers for Figure 2. Chart styling is regenerated rather than pixel-identical. The workflow `.github/workflows/generate-figures.yml` regenerates and commits PNGs when the analysis scripts or summary CSVs change.
 
 ## Aggregation matters
 
