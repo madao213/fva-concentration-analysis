@@ -1,7 +1,7 @@
 {
   "audit_date_utc": "2026-11-14",
   "data_source": "locally retained prepared EXGRVA joint source-area × source-industry matrix",
-  "status": "PASS: complete retained matrix -> HHI panels; NOT YET TESTED: raw OECD ZIP/Parquet -> retained matrix",
+  "status": "PASS: all retained prepared matrix cells to paper HHI results; adjacent raw CSV-to-Parquet and historical Parquet-to-prepared comparisons independently documented",
   "record_count": 5376000,
   "exporter_industry_year_groups": 1344,
   "cells_per_group": 4000,
@@ -23,6 +23,10 @@
     "Every row of the retained matrix was read in a standalone local streaming calculation.",
     "Comparisons used the preexisting published industry_year_hhi.csv and annual_hhi.csv outputs.",
     "Values from the input matrix are clipped at zero for HHI calculations, not before the retained input audit.",
-    "The historical raw Parquet and the seven OECD ZIPs were not verified through the source-preparation program; no claim of raw-source end-to-end PASS is made."
+    "Separate reports now document a complete 2026-11-15 original CSV-to-historical Parquet audit and a 2026-11-07 historical Parquet-to-prepared-matrix audit. This specific report still covers only retained matrix-to-results calculations."
+  ],
+  "adjacent_audit_reports": [
+    "audit/reports/original_csv_to_parquet_verification_2026-11-15.json",
+    "audit/reports/historical_parquet_reconciliation_2026-11-07.json"
   ]
 }
