@@ -1,0 +1,32 @@
+{
+  "verification_date": "2026-11-07",
+  "verification_status": "PASS (historical recorded execution)",
+  "original_script": "verify_parquet_vs_joint.py",
+  "comparison": "Nov 1 historical Parquet versus Nov 7 prepared joint CSV.gz",
+  "historical_parquet_rows": 14784000,
+  "prepared_joint_rows": 5376000,
+  "historical_parquet_null_values": 0,
+  "prepared_joint_null_values": 0,
+  "parquet_duplicate_key_groups": 0,
+  "prepared_joint_duplicate_key_groups": 0,
+  "matched_keys": 5376000,
+  "matched_nonnull": 5376000,
+  "unmatched_or_null": 0,
+  "max_absolute_value_difference": 0,
+  "difference_gt_1e_6": 0,
+  "difference_gt_0_001": 0,
+  "difference_gt_0_1": 0,
+  "mismatch_rows": 0,
+  "comparison_keys": [
+    "EXPORTING_AREA",
+    "TIME_PERIOD",
+    "EXPORTING_ACTIVITY",
+    "VALUE_ADDED_SOURCE_AREA",
+    "VALUE_ADDED_SOURCE_ACTIVITY"
+  ],
+  "provenance": "Historical conversation execution output from 2026-11-07; corresponding historical cross-format script remains available. This JSON records previously observed results, not a new full Parquet execution.",
+  "limits": [
+    "The newly reconstructed source preparation script has not been rerun against the entire historical Parquet in this session.",
+    "The historical five-key crosscheck does not independently validate upstream raw OECD ZIP download or classification choices."
+  ]
+}
