@@ -97,11 +97,22 @@ HHI describes the *distribution of foreign value added*. It does not directly me
 
 
 
+### Earlier full Parquet reconciliation (2026-11-07)
+
+The original cross-format audit was **already executed on 2026-11-07**, using the historical `verify_parquet_vs_joint.py`. Its historical execution record reported:
+
+- Historical Parquet: **14,784,000 records**; prepared joint CSV.gz: **5,376,000 records**.
+- Complete five-dimensional join: **5,376,000 matched non-null records**, **0 unmatched/null**, **0 duplicate key groups**.
+- Maximum absolute matched-value difference: **0.0**. Counts above **1e-6**, **0.001**, and **0.1** differences were all **0**, and the mismatch result was empty.
+- This is a **documented historical execution result**, not a claim that GitHub Actions or the later reconstructed preparation script reran the full Parquet.
+
+The audit script has been retained and adapted in `audit/verify_parquet_vs_joint.py`; the historical-result record is in `audit/reports/historical_parquet_reconciliation_2026-11-07.json`. The historical reconciliation verifies the **Parquet-to-prepared-matrix mapping for the selected cells**, but cannot independently establish how the OECD export was originally downloaded or that all classification selections were substantively appropriate.
+
 ### Full retained-input audit (completed)
 
 An independent local streaming audit has now processed **all 5,376,000 rows** of the retained prepared EXGRVA matrix and recomputed every industry-year geographic, industry and joint HHI, together with all annual equal-weighted/pooled/no-WXD HHIs. Against the published result CSVs, the greatest reported HHI difference was **less than 5 × 10⁻¹³**; all **1,344** exporter-industry-year groups contained **4,000** source-area/source-industry cells. There were **1,128** negative-value cells before clipping, summing to **−268.547 USD million**. See `audit/reports/retained_matrix_validation.json` and the standalone `audit/validate_retained_matrix.py` audit script. No raw OECD data have been posted to the repository.
 
-The retained **historical Parquet** file was also confirmed locally to contain **14,784,000 rows**, **121** Parquet row groups, and the five needed source/target dimensions plus `MEASURE`, `UNIT_MEASURE`, `FREQ`, `OBS_VALUE` and `UNIT_MULT`. See `audit/reports/historical_parquet_metadata.json` for the file fingerprints and schema. **Only its metadata were checked:** its underlying records were not decoded in this environment, so comparison of raw Parquet observations against the prepared joint matrix remains outstanding.
+The retained **historical Parquet** file was also confirmed locally to contain **14,784,000 rows**, **121** Parquet row groups, and the five needed source/target dimensions plus `MEASURE`, `UNIT_MEASURE`, `FREQ`, `OBS_VALUE` and `UNIT_MULT`. See `audit/reports/historical_parquet_metadata.json` for the file fingerprints and schema. **Historical verification (2026-11-07):** An earlier execution of `verify_parquet_vs_joint.py` compared the complete historical Parquet data with the retained joint matrix. The recorded results were 5,376,000 / 5,376,000 matched records, 0 unmatched or null records, 0 duplicate keys and maximum absolute matched-value difference 0.0. This was a historical successful run, **not** a fresh execution during the repository reconstruction. The Parquet metadata described above were inspected again in the later session. See `audit/reports/historical_parquet_reconciliation_2026-11-07.json`.
 
 To re-run the checked prepared-matrix audit after obtaining the retained file:
 
@@ -112,7 +123,7 @@ python audit/validate_retained_matrix.py \
   --report audit_output/retained_matrix_validation.json
 ```
 
-**Verification boundary:** The published work is verified end-to-end **from the retained prepared joint matrix**; reconstruction **starting with OECD raw input files or historical raw Parquet is not yet fully empirically verified**. The upstream conversion program is present and its smaller synthetic cases pass; do not interpret those tests as confirmation that raw-to-prepared 14.784m-to-5.376m data conversion matches every cell.
+**Verification boundary:** The **historical Parquet-to-prepared-matrix reconciliation passed on 2026-11-07**, and the retained matrix-to-paper results were independently checked later. The **newly reconstructed upstream preparation program has not been rerun on the complete Parquet or the seven official OECD ZIPs**, and the OECD-download-to-Parquet acquisition/selection stage has not been separately audited. These distinct verification stages must not be conflated.
 
 ## End-to-end source preparation (OECD export -> manuscript)
 
@@ -161,8 +172,8 @@ If the official input format, measurement units, missing cells, or paper benchma
 ### What has and has not been verified
 
 - The current public GitHub workflow passes Python compilation, synthetic OECD CSV/ZIP ingestion tests, the previously committed manuscript numerical checks, and image/table generation.
-- The source-preparation script was reconstructed from historical artifacts and final selection rules. The full **original seven OECD ZIPs were not retained** in this public repository. The historical Parquet is held privately, and source-level conversion from that complete file has **not yet been executed and independently verified in this environment**.
-- Therefore the repository has an **implemented end-to-end reconstruction path**, **not yet a verified end-to-end replication from the original OECD download**. This distinction is intentional and must remain in any public description of the research.
+- The original 2026-11-07 five-key comparison of the **historical Parquet to the retained joint CSV** succeeded with all 5,376,000 prepared cells matched, no unmatched/null or duplicate keys, and no numerical differences. The newly reconstructed `src/prepare_exgrva.py` has **not** been run on that complete Parquet in this reconstruction session, and the seven official OECD ZIPs are not published in this repository.
+- The repository has an **implemented source-to-results workflow**, a **successful historical Parquet-to-joint reconciliation**, and a separate **full retained-joint-matrix-to-paper audit**. It does **not** yet establish a newly rerun, independently verified path from the seven original OECD download ZIPs through the current reconstructed scripts.
 
 
 ## Historical audit and supplementary scripts (restored)
