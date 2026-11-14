@@ -1,0 +1,28 @@
+{
+  "audit_date_utc": "2026-11-14",
+  "data_source": "locally retained prepared EXGRVA joint source-area × source-industry matrix",
+  "status": "PASS: complete retained matrix -> HHI panels; NOT YET TESTED: raw OECD ZIP/Parquet -> retained matrix",
+  "record_count": 5376000,
+  "exporter_industry_year_groups": 1344,
+  "cells_per_group": 4000,
+  "negative_cell_count": 1128,
+  "negative_sum_usd_million": -268.54699999999866,
+  "max_absolute_difference": {
+    "industry_year_total_fva": 1.4551915228366852e-11,
+    "industry_year_geo_hhi": 4.98212582300539e-13,
+    "industry_year_industry_hhi": 4.996281166569361e-13,
+    "industry_year_joint_hhi": 4.879568971105641e-13,
+    "annual_equal_geo_hhi": 3.5924041519308503e-13,
+    "annual_equal_industry_hhi": 4.927169783286445e-13,
+    "annual_equal_joint_hhi": 4.974839984406287e-14,
+    "annual_pooled_joint_hhi": 4.960788724250875e-14,
+    "annual_pooled_no_wxd_joint_hhi": 4.700059785811561e-14,
+    "annual_wxd_share": 4.948541576510479e-13
+  },
+  "notes": [
+    "Every row of the retained matrix was read in a standalone local streaming calculation.",
+    "Comparisons used the preexisting published industry_year_hhi.csv and annual_hhi.csv outputs.",
+    "Values from the input matrix are clipped at zero for HHI calculations, not before the retained input audit.",
+    "The historical raw Parquet and the seven OECD ZIPs were not verified through the source-preparation program; no claim of raw-source end-to-end PASS is made."
+  ]
+}
