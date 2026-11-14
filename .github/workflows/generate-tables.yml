@@ -1,0 +1,33 @@
+name: Rebuild manuscript tables
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'src/generate_paper_tables.py'
+      - 'results/endpoint_summary.csv'
+      - 'results/correlations.csv'
+      - '.github/workflows/generate-tables.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  publish-tables:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements.txt
+      - run: python src/generate_paper_tables.py --results results
+      - name: Commit manuscript table CSVs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results/paper_table1.csv results/paper_table2.csv results/paper_table3.csv results/paper_table4.csv
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish manuscript Tables 1-4"
+            git push
+          fi
