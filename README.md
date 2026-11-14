@@ -1,232 +1,111 @@
 # Geographic, Industrial, and Joint Concentration of Foreign Value Added in Manufacturing Exports
 
-**Replication code — reconstructed from the paper's methodology and retained analytical input data**
-
-This repository accompanies the study *Geographic, Industrial, and Joint Concentration of Foreign Value Added in Manufacturing Exports* by Ming Yang. It analyzes foreign value added (FVA) in manufacturing exports from **China, Japan, and the United States, 1995–2022**, using the **OECD Trade in Value Added (TiVA), 2025 edition, January 2026 revision**, **EXGRVA** indicator.
-
-> **Reproducibility status:** The study's analysis-stage code and an upstream OECD data-preparation program have been **reconstructed**; the original historical source scripts have **not** all been recovered. The calculations were rerun using a retained prepared source-economy × source-industry matrix and their principal results checked against the paper. The full input matrix is **not** publicly redistributed. Direct OECD auto-download is not included. All three historical data stages have independent reconciliation evidence; the new `src/run_pipeline.py` workflow was subsequently run successfully from the complete historical Parquet on a local Mac (2026-11-15).
+This repository contains the code and results for my study of foreign value added in manufacturing exports from China, Japan, and the United States between 1995 and 2022. The data come from the OECD Trade in Value Added database, 2025 edition, January 2026 revision. The study uses the EXGRVA measure, which identifies where the value added embodied in exports originated.
 
 ## Research question
 
-Does diversification in the foreign economies supplying value added to exports imply diversification in the *industries* where that value added originates?
+A country can obtain inputs from many foreign economies while still depending heavily on a small number of foreign industries. The paper asks whether geographic diversification is associated with diversification across the industries that produce this value added.
 
-The paper distinguishes three concentration measures computed from the same FVA matrix:
+I measure concentration in three ways.
 
-- **Geographic HHI** — source-economy concentration after summing over source industries.
-- **Source-industry HHI** — source-industry concentration after summing over source economies.
-- **Joint HHI** — concentration across individual source-economy × source-industry pairs.
+1. **Geographic concentration** measures how foreign value added is distributed across source economies.
+2. **Industry concentration** measures how it is distributed across source industries.
+3. **Joint concentration** measures how it is distributed across combinations of source economies and source industries.
 
-There are **1,344 exporter–manufacturing industry–year observations** (3 exporters × 16 manufacturing export industries × 28 years). The study also compares an *equal-weighted* average of 16 export-industry HHIs with a *pooled* joint HHI computed after combining value added from all manufacturing export industries.
+All three use the Herfindahl Hirschman Index (HHI). A higher HHI indicates that value added is concentrated in fewer sources.
 
-## Selected findings
+The analysis covers 16 manufacturing export industries in each of the three countries over 28 years. This gives 1,344 observations at the country, export industry, and year level.
 
-| Exporter | Equal-weighted joint HHI change, 1995–2022 | Pooled joint HHI change, 1995–2022 |
-|---|---:|---:|
+I also compare two ways of summarizing joint concentration across manufacturing industries. The first gives each of the 16 exporting industries equal weight. The second combines their foreign value added before calculating concentration. These two measures answer different questions and need not move together.
+
+## Findings
+
+The change in joint concentration between 1995 and 2022 depends partly on how the exporting industries are combined.
+
+| Exporter | Equal average of industry joint HHIs | Joint HHI after pooling manufacturing |
+| --- | ---: | ---: |
 | China | +80.5% | +8.6% |
 | Japan | +36.3% | +59.8% |
 | United States | −5.3% | +55.1% |
 
-Excluding residual source-area category **WXD** and renormalizing source shares changes China's pooled joint HHI endpoint comparison to **−12.2%**. Excluding export industry **C19** (coke and refined petroleum) reduces the overall geographic/source-industry Pearson correlation from **0.711** to **0.085**. These are descriptive comparisons, **not causal estimates**.
+Two checks are particularly relevant to the interpretation.
 
-## Contents
+Removing the residual source area WXD changes the direction of China's pooled comparison. Instead of increasing by 8.6%, joint concentration falls by 12.2%.
 
-- `src/analyze.py` — HHI calculations; equal-weighted and pooled measures; correlations; C19/WXD sensitivity; figure generation.
-- `src/verify_paper.py` — compares recomputed result tables against published numerical benchmarks, at reported rounding precision.
-- `tests/test_analysis.py` — small synthetic unit tests for HHI properties.
-- `requirements.txt` — Python dependencies.
-- `data/README.md` — expected prepared input format and data use guidance.
-- `results/` — complete industry-year HHI panel (1,344 rows), annual HHI panel (84 rows), and selected checks.
-- `figures/` — three PNG plots regenerated by the GitHub Actions workflow from the published summary CSV files.
-- `CITATION.cff` and `LICENSE` — software attribution and permissions.
+The geographic and industry HHIs have a Pearson correlation of 0.711 across the full set of observations. When the petroleum industry C19 is excluded, the correlation falls to 0.085. The overall relationship is therefore sensitive to the industries included.
 
-## Input data
+These results describe the distribution of foreign value added. They do not by themselves measure the cost of replacing suppliers or the risk of a supply disruption.
 
-**Not included:** `EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz` — the prepared long matrix that served as the analysis input. Obtain the underlying data from [OECD TiVA](https://www.oecd.org/en/topics/sub-issues/trade-in-value-added.html), and reconstruct the prepared matrix as documented below.
+## Data and methods
 
-| Column | Description |
-|---|---|
-| `EXPORTING_AREA` | `CHN`, `JPN`, `USA` |
-| `TIME_PERIOD` | 1995–2022 |
-| `EXPORTING_ACTIVITY` | One of 16 manufacturing export-industry codes |
-| `VALUE_ADDED_SOURCE_AREA` | Foreign source economy or `WXD` |
-| `SOURCE_AREA_LABEL` | Readable source label |
-| `VALUE_ADDED_SOURCE_ACTIVITY` | Source-industry code (50 industry categories) |
-| `SOURCE_INDUSTRY_LABEL` | Readable source-industry label |
-| `OBS_VALUE_USD_MILLION` | EXGRVA amount, million current USD |
+The data are from [OECD TiVA](https://www.oecd.org/en/topics/sub-issues/trade-in-value-added.html). The specific source is the EXGRVA series in the 2025 edition, revised in January 2026.
 
-The prepared matrix excludes domestic value-added cells. Small negative value-added observations are clipped to zero **at the individual cell level**. The baseline includes `WXD`; a sensitivity check excludes it and recomputes the shares. The script verifies expected 3 × 16 × 28 coverage.
+The analysis keeps foreign sources of value added and excludes domestic sources. It uses 50 detailed source industry categories and 80 foreign source area categories for each exporter. Each country, export industry, and year has 4,000 possible source pairs.
 
-**Important:** A reconstruction program for the upstream selection and normalization is now provided in `src/prepare_exgrva.py`, with a full local workflow in `src/run_pipeline.py`. The historical original CSV-to-Parquet stage was fully reconciled in November 2026, and the reconstructed Parquet-to-results workflow passed a complete local run on 2026-11-15. The source-category lists are explicit rather than dynamically inferred; they preserve the study's selected scope. Do not publicly redistribute OECD data without checking its terms.
+The prepared dataset contains 5,376,000 source pair records. Small negative values are retained in the prepared data and set to zero when concentration is calculated. This is done before calculating source shares. The main results include WXD, with a separate calculation excluding it.
 
-## Run the analysis
+The original OECD CSV, historical Parquet file, and prepared matrix are not stored in this repository. The code for preparing and analysing them is included. Data definitions and expected columns are described in [data/README.md](data/README.md).
 
-Python 3.10+:
+## Reproducing the results
+
+Python 3.10 or later is recommended. Install the required packages from the project directory.
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-
-# Supply your locally held prepared matrix first:
-# data/EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz
-python src/analyze.py --input data/EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz --output results
-python src/verify_paper.py --results results
-python -m unittest discover -s tests -v
-```
-
-The three PNG figures can also be regenerated **without the restricted prepared matrix** by running `python src/render_figures.py` against the public `results/` CSV files. The renderer follows the figure structures in the final Writing Sample: country panels for Figures 1 and 3, and C19-vs-other-industry markers for Figure 2. Chart styling is regenerated rather than pixel-identical. The workflow `.github/workflows/generate-figures.yml` regenerates and commits PNGs when the analysis scripts or summary CSVs change.
-
-## Aggregation matters
-
-Let `J_i` be an export industry's joint HHI and `w_i` its share of total FVA in manufacturing exports.
-
-- **E:** unweighted mean of the 16 `J_i`.
-- **W:** FVA-weighted mean of `J_i`.
-- **P:** joint HHI calculated only *after pooling* source-pair values across all export industries.
-
-**P is not W.** The differences matter to the interpretation of within-industry versus overall manufacturing concentration.
-
-## Validated against the paper
-
-Using the retained prepared matrix locally, the reconstructed analysis matched, within displayed rounding, Table 1 endpoint concentration figures, Table 2 correlations, Table 3 equal-weighted and pooled comparisons, and the selected C19 and WXD sensitivity checks. These validations establish consistency **from the retained prepared data onward**, not upstream raw-data replication.
-
-## Interpretation
-
-HHI describes the *distribution of foreign value added*. It does not directly measure substitutability, disruption costs, or political vulnerability. Cite the accompanying research paper when using its findings and OECD TiVA for the underlying data.
-
-
-
-
-### New full local pipeline execution (2026-11-15)
-
-The researcher ran `src/run_pipeline.py` using the retained historical Parquet and `--reference` pointing to the saved prepared EXGRVA matrix. The **seven-stage process completed successfully** on macOS with Python 3.11. The user-provided terminal output reported:
-
-- **5,376,000 prepared cells** and **1,344 exporter-industry-year groups**.
-- **5,376,000 joined cells, zero missing, zero numeric discrepancies, max difference 0** against the historical prepared matrix.
-- **1,128 negative source cells** totaling **−268.547 USD million**, and exactly **4,000 cells per group**.
-- Successful generation of **Figures 1–3**, all five summary/analysis CSVs, **Tables 1–4**, and supplemental outputs.
-- **PASS: 19 manuscript endpoint benchmarks and 9 correlation rows** at reported rounding.
-- Japan C26 China-origin foreign-value-added share: **0.038831 (1995)** and **0.298684 (2022)**.
-- Terminal ended with **`SUCCESS. Local outputs: .../local_replication`**.
-
-The audit record in `audit/reports/local_pipeline_validation_2026-11-15.json` is a transcription of the researcher's **local terminal log**; the user's underlying source data and generated local manifest were **not** uploaded to GitHub. GitHub Actions continues to validate code and small synthetic tests without private data. A separate full-original-CSV-to-historical-Parquet equality audit is documented above; it was not run as part of this seven-stage invocation.
-
-### Earlier full Parquet reconciliation (2026-11-07)
-
-The original cross-format audit was **already executed on 2026-11-07**, using the historical `verify_parquet_vs_joint.py`. Its historical execution record reported:
-
-- Historical Parquet: **14,784,000 records**; prepared joint CSV.gz: **5,376,000 records**.
-- Complete five-dimensional join: **5,376,000 matched non-null records**, **0 unmatched/null**, **0 duplicate key groups**.
-- Maximum absolute matched-value difference: **0.0**. Counts above **1e-6**, **0.001**, and **0.1** differences were all **0**, and the mismatch result was empty.
-- This is a **documented historical execution result**, not a claim that GitHub Actions or the later reconstructed preparation script reran the full Parquet.
-
-The audit script has been retained and adapted in `audit/verify_parquet_vs_joint.py`; the historical-result record is in `audit/reports/historical_parquet_reconciliation_2026-11-07.json`. The historical reconciliation verifies the **Parquet-to-prepared-matrix mapping for the selected cells**, but cannot independently establish how the OECD export was originally downloaded or that all classification selections were substantively appropriate.
-
-### Full retained-input audit (completed)
-
-An independent local streaming audit has now processed **all 5,376,000 rows** of the retained prepared EXGRVA matrix and recomputed every industry-year geographic, industry and joint HHI, together with all annual equal-weighted/pooled/no-WXD HHIs. Against the published result CSVs, the greatest reported HHI difference was **less than 5 × 10⁻¹³**; all **1,344** exporter-industry-year groups contained **4,000** source-area/source-industry cells. There were **1,128** negative-value cells before clipping, summing to **−268.547 USD million**. See `audit/reports/retained_matrix_validation.json` and the standalone `audit/validate_retained_matrix.py` audit script. No raw OECD data have been posted to the repository.
-
-The retained **historical Parquet** file was also confirmed locally to contain **14,784,000 rows**, **121** Parquet row groups, and the five needed source/target dimensions plus `MEASURE`, `UNIT_MEASURE`, `FREQ`, `OBS_VALUE` and `UNIT_MULT`. See `audit/reports/historical_parquet_metadata.json` for the file fingerprints and schema. **Historical verification (2026-11-07):** An earlier execution of `verify_parquet_vs_joint.py` compared the complete historical Parquet data with the retained joint matrix. The recorded results were 5,376,000 / 5,376,000 matched records, 0 unmatched or null records, 0 duplicate keys and maximum absolute matched-value difference 0.0. This was a historical successful run, **not** a fresh execution during the repository reconstruction. The Parquet metadata described above were inspected again in the later session. See `audit/reports/historical_parquet_reconciliation_2026-11-07.json`.
-
-To re-run the checked prepared-matrix audit after obtaining the retained file:
-
-```bash
-python audit/validate_retained_matrix.py \
-  --matrix /path/to/EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz \
-  --results results \
-  --report audit_output/retained_matrix_validation.json
-```
-
-**Verification boundary:** Original recovered CSV **→** historical Parquet was independently verified on **2026-11-15** (14,784,000 complete records, SHA-256 multiset equality). Historical Parquet **→** prepared joint matrix passed a five-key reconciliation on **2026-11-07** (5,376,000/5,376,000 selected cells). Prepared joint matrix **→** manuscript results was independently verified later (all 5,376,000 cells checked). The **newly reconstructed** `src/prepare_exgrva.py` / `src/run_pipeline.py` was also executed end-to-end from the 14,784,000-row historical Parquet by the researcher on 2026-11-15: all seven stages completed. The source ZIP/CSV-to-Parquet equality was independently audited separately, not processed within this particular seven-stage invocation. These checks do not independently certify upstream OECD data selection/provenance.
-
-## Historical original CSV → Parquet: independent check
-
-The historical source file was named `EXGRVA_CHN_JPN_USA_1995_2022.csv` (approximately 1.31 GB, according to the earlier workflow). **The original CSV was subsequently recovered from a user-uploaded ZIP on 2026-11-15 and independently compared to the historical Parquet.** The original `Joint_Analysis_1995_2022.parquet` (14,784,000 records) has been retained.
-
-A dedicated verification program is ready at `audit/verify_raw_csv_vs_parquet.py`. Once the **original exact CSV** is available locally, run:
-
-```bash
-python audit/verify_raw_csv_vs_parquet.py \
-  --raw /path/to/EXGRVA_CHN_JPN_USA_1995_2022.csv \
-  --parquet /path/to/Joint_Analysis_1995_2022.parquet \
-  --out audit_output/raw_parquet
-```
-
-It checks complete five-dimensional origin/export dimensions plus `DATAFLOW`, `MEASURE`, `UNIT_MEASURE`, `FREQ`, `TIME_PERIOD`, `UNIT_MULT`; compares `OBS_VALUE` for every retained row; detects duplicate keys, extra or missing keys; and produces SHA-256 source fingerprints, a JSON report, and up to 1,000 mismatch examples. A missing/incorrect source file cannot be replaced by a fresh OECD download without checking edition and exact source bytes.
-
-**Real-data verification: PASS (2026-11-15).** All **14,784,000 original CSV records** and all **14,784,000 historical Parquet records** were independently decoded. SHA-256 hashes of every complete normalized 11-field record were compared as sorted multisets (preserving multiplicity), with **zero disagreements and zero duplicate full records**. The ZIP contents passed CRC32 verification. File SHA-256 fingerprints, the method, and qualifications are recorded in [`audit/reports/original_csv_to_parquet_verification_2026-11-15.json`](audit/reports/original_csv_to_parquet_verification_2026-11-15.json). This is a full-record cryptographic hash comparison, not a literal SQL join. The distinct **2026-11-07 Parquet-to-prepared-matrix reconciliation remains historically verified**.
-
-## End-to-end source preparation (OECD export -> manuscript)
-
-The repository now includes a *source-preparation program* and a **single-command local workflow**. This program is distinct from the previously reconstructed analysis-only code.
-
-### Obtain the correct upstream dataset
-
-Use the OECD Data Explorer dataset **Trade in Value Added (TiVA) 2025 edition: Origin of value added in gross exports**, **EXGRVA**, revised January 2026:
-
-https://data-explorer.oecd.org/vis?df%5Bag%5D=OECD.STI.PIE&df%5Bds%5D=DisseminateFinalDMZ&df%5Bid%5D=DSD_TIVA_EXGRVA%40DF_EXGRVA
-
-The OECD interface currently lists seven *CSV ZIP* source files for 1995–1998, 1999–2002, 2003–2006, 2007–2010, 2011–2014, 2015–2018 and 2019–2022. Download the **EXGRVA** files, **not** EXGR_FVA or EXGR_FVASH (these are different indicators). Alternatively, the retained historical `Joint_Analysis_1995_2022.parquet` may be used if it is locally available.
-
-**Caution:** These files can be very large; reserve sufficient storage and time. OECD may change API/export file locations. This repository does not publish the files and does not claim to automatically download an unverified URL.
-
-### End-to-end local run
-
-```bash
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-
-# Save OECD's seven EXGRVA ZIP files in a local directory, e.g.:
-# /path/to/oecd_exgrva_zips/
-# Or pass a local historical raw Parquet file.
-python src/run_pipeline.py \
-  --source /path/to/oecd_exgrva_zips/ \
-  --workspace local_replication \
-  --reference /path/to/EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz
 ```
 
-The `--reference` argument is **optional**, but **strongly recommended** when the retained historical matrix is available. It requests a full cell-level comparison of the regenerated matrix against the original analysis input. If either missing rows or numerical mismatches are found, the run fails instead of silently replacing a reference.
-
-The workflow:
-
-1. Reads OECD EXGRVA raw CSV, split CSV ZIPs, or historical Parquet, selecting **CHN, JPN, USA**, **1995–2022**, **16 non-overlapping manufacturing export industries**, **50 source industries**, and **80 foreign source-area categories per exporter**.
-2. Excludes domestic source value added, removes overlapping source-industry subtotals, and expects **5,376,000** unique cells in **1,344** exporter–industry–year groups. Retains negative source-cell values until the analysis-stage clipping rule.
-3. Writes the local prepared matrix `EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz`, with source codes as labels and data values rounded to 3 decimal places of USD millions to correspond to the retained prepared input.
-4. Optionally compares all five-dimensional keys and cell values to the historical reference matrix (tolerance 0.0011 USD million).
-5. Runs matrix-audit checks and the three HHI calculations.
-6. Checks manuscript numerical benchmarks and generates Tables 1–4, Figures 1–3, source-pair persistence and Japan C26 supplementary analyses.
-7. Writes a **local** `run_manifest.json` with the prepared file SHA-256 and whether historic-reference comparison was performed.
-
-If the official input format, measurement units, missing cells, or paper benchmark values do not match what the study used, the script should fail and the discrepancy must be investigated, **not** normalized away.
-
-### What has and has not been verified
-
-- The current public GitHub workflow passes Python compilation, synthetic OECD CSV/ZIP ingestion tests, the previously committed manuscript numerical checks, and image/table generation.
-- The original 2026-11-07 five-key comparison of the **historical Parquet to the retained joint CSV** succeeded with all 5,376,000 prepared cells matched, no unmatched/null or duplicate keys, and no numerical differences. The new `src/prepare_exgrva.py` was later run on the complete historical Parquet on the researcher's Mac (2026-11-15), yielding 5,376,000 cells and a perfect five-dimensional match to the retained matrix. The official OECD source ZIPs are not published here.
-- The repository now documents **three independently checked historical stages**: (1) recovered CSV ↔ original Parquet (14,784,000 rows, 2026-11-15), (2) historical Parquet ↔ prepared joint CSV (5,376,000 selected rows, 2026-11-07), and (3) prepared joint CSV ↔ published HHI results (5,376,000 source cells checked). The newly reconstructed seven-stage `src/run_pipeline.py` was subsequently run successfully on the complete historical Parquet on 2026-11-15; see `audit/reports/local_pipeline_validation_2026-11-15.json` for a transcription of the researcher's terminal output. The separate original CSV-to-Parquet equality check remains a distinct verification run.
-
-
-## Historical audit and supplementary scripts (restored)
-
-The original research also produced independent audit and supplementary scripts. Four have now been **adapted** for this repository, rather than uploaded as unmodified notebook-era drafts:
-
-| Script | Purpose | Data required |
-|---|---|---|
-| `audit/verify_joint.py` | Joint-matrix key counts, 4,000 pair cells per exporter–industry–year, negatives, and HHI endpoint checks | Prepared EXGRVA `.csv.gz` |
-| `audit/verify_parquet_vs_joint.py` | Compare historical Parquet observations to matching cells in the later prepared matrix by five-dimensional key | Historical OECD Parquet **and** prepared EXGRVA `.csv.gz` |
-| `supplementary/build_supp.py` | Annual top-10 source pairs, pair persistence, endpoint Jaccard overlap, pooled WXD checks, including Japan C26 | Prepared EXGRVA `.csv.gz` |
-| `supplementary/jpn_c26_decomposition.py` | Japanese C26 exports: breakdown of China-origin FVA by contributing source industry, and China share of **all** foreign FVA | Prepared EXGRVA `.csv.gz` |
-
-Run them only after obtaining the locally held prepared matrix (and historical Parquet for the cross-format comparison):
+To reproduce the analysis from the historical Parquet file, place `Joint_Analysis_1995_2022.parquet` in the project directory and run the following command.
 
 ```bash
-python audit/verify_joint.py --input data/EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz --output audit_output
-python audit/verify_parquet_vs_joint.py --parquet /path/to/Joint_Analysis_1995_2022.parquet --joint data/EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz --output audit_output/parquet_comparison
-python supplementary/build_supp.py --input data/EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz --output supplementary_output
-python supplementary/jpn_c26_decomposition.py --input data/EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz --output supplementary_output/jpn_c26
+python src/run_pipeline.py \
+  --source Joint_Analysis_1995_2022.parquet \
+  --workspace local_replication
 ```
 
-The C26 decomposition uses the **retained positive-cell prepared matrix**. The older study's `_T` OECD total reconciliation on raw Parquet categories was a separate operation and is **not** silently claimed as implemented here. The cross-format script tests agreement on shared dimension keys; it does not validate classification design. Original scripts contained machine-local paths and `artifact_tool` spreadsheet exports. These portable adaptations write CSVs and do **not** need that private spreadsheet package.
+If the original prepared matrix is also available, include it as a reference. This checks every reconstructed source pair against the earlier data.
 
-GitHub Actions validates Python syntax, the numerical tables committed with this repository, and synthetic unit tests. It **does not** run the large private-input audit on GitHub, because the underlying data are not published here. Experimental COVID-shock and reallocation scripts are intentionally excluded from the formal paper replication package.
+```bash
+python src/run_pipeline.py \
+  --source Joint_Analysis_1995_2022.parquet \
+  --workspace local_replication \
+  --reference EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz
+```
+
+The program prepares the data, calculates the concentration measures and correlations, checks the main numerical results, and generates the tables and figures. Outputs are saved in `local_replication/`.
+
+The preparation script also accepts OECD EXGRVA CSV files and ZIP archives. See [src/prepare_exgrva.py](src/prepare_exgrva.py) for the input options.
+
+Readers who only want to view or regenerate the figures can use the summary data already in `results/`.
+
+```bash
+python src/render_figures.py
+```
+
+## Files
+
+| Location | Contents |
+| --- | --- |
+| `src/` | Data preparation, HHI calculations, figure generation and checks against the paper |
+| `results/` | Industry and annual HHI results, correlations, robustness checks and paper tables |
+| `figures/` | The three figures used in the paper |
+| `audit/` | Data checks and reports from earlier and recent verification runs |
+| `supplementary/` | Source pair rankings, WXD sensitivity and the Japan C26 analysis |
+| `tests/` | Small tests for the analysis and data preparation code |
+
+## Verification
+
+The data and results have been checked at each main stage of the analysis.
+
+The recovered original CSV and the historical Parquet each contain 14,784,000 records. A comparison of all 11 fields found no differences between their complete record sets.
+
+The historical Parquet was then used to reconstruct the 5,376,000 records in the prepared matrix. The reconstructed matrix matched the retained version without missing cells or numerical differences.
+
+On November 15, 2026, I ran `src/run_pipeline.py` on the complete historical Parquet on my Mac. All seven stages finished. The checks against the paper passed for 19 reported endpoint values and nine correlation results. The program also generated the four paper tables, three figures and supplementary analyses.
+
+The detailed records are available in [audit/reports](audit/reports). The original data files remain local.
+
+## Citation
+
+If you use the results, please cite the accompanying paper and the OECD TiVA database. Repository citation information is provided in [CITATION.cff](CITATION.cff).
