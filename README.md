@@ -4,7 +4,7 @@
 
 This repository accompanies the study *Geographic, Industrial, and Joint Concentration of Foreign Value Added in Manufacturing Exports* by Ming Yang. It analyzes foreign value added (FVA) in manufacturing exports from **China, Japan, and the United States, 1995–2022**, using the **OECD Trade in Value Added (TiVA), 2025 edition, January 2026 revision**, **EXGRVA** indicator.
 
-> **Reproducibility status:** The study's analysis-stage code and an upstream OECD data-preparation program have been **reconstructed**; the original historical source scripts have **not** all been recovered. The calculations were rerun using a retained prepared source-economy × source-industry matrix and their principal results checked against the paper. The full input matrix is **not** publicly redistributed. Direct OECD auto-download is not included. Upstream source-to-prepared-matrix conversion is implemented, but has not been fully validated against the original OECD files.
+> **Reproducibility status:** The study's analysis-stage code and an upstream OECD data-preparation program have been **reconstructed**; the original historical source scripts have **not** all been recovered. The calculations were rerun using a retained prepared source-economy × source-industry matrix and their principal results checked against the paper. The full input matrix is **not** publicly redistributed. Direct OECD auto-download is not included. All three historical data stages have independent reconciliation evidence; the newly reconstructed upstream preparation program has not been run as one complete full-data pipeline.
 
 ## Research question
 
@@ -56,7 +56,7 @@ Excluding residual source-area category **WXD** and renormalizing source shares 
 
 The prepared matrix excludes domestic value-added cells. Small negative value-added observations are clipped to zero **at the individual cell level**. The baseline includes `WXD`; a sensitivity check excludes it and recomputes the shares. The script verifies expected 3 × 16 × 28 coverage.
 
-**Important:** A reconstruction program for the upstream selection and normalization is now provided in `src/prepare_exgrva.py`, with a full local workflow in `src/run_pipeline.py`. This upstream stage has not yet been independently benchmarked against the complete original OECD download. The source-category lists are explicit rather than dynamically inferred; they preserve the study's selected scope. Do not publicly redistribute OECD data without checking its terms.
+**Important:** A reconstruction program for the upstream selection and normalization is now provided in `src/prepare_exgrva.py`, with a full local workflow in `src/run_pipeline.py`. The historical original CSV-to-Parquet stage was fully reconciled in November 2026, while the reconstructed code path still awaits a continuous full-source test. The source-category lists are explicit rather than dynamically inferred; they preserve the study's selected scope. Do not publicly redistribute OECD data without checking its terms.
 
 ## Run the analysis
 
@@ -123,11 +123,11 @@ python audit/validate_retained_matrix.py \
   --report audit_output/retained_matrix_validation.json
 ```
 
-**Verification boundary:** The **historical Parquet-to-prepared-matrix reconciliation passed on 2026-11-07**, and the retained matrix-to-paper results were independently checked later. The **newly reconstructed upstream preparation program has not been rerun on the complete Parquet or the seven official OECD ZIPs**, and the OECD-download-to-Parquet acquisition/selection stage has not been separately audited. These distinct verification stages must not be conflated.
+**Verification boundary:** Original recovered CSV **→** historical Parquet was independently verified on **2026-11-15** (14,784,000 complete records, SHA-256 multiset equality). Historical Parquet **→** prepared joint matrix passed a five-key reconciliation on **2026-11-07** (5,376,000/5,376,000 selected cells). Prepared joint matrix **→** manuscript results was independently verified later (all 5,376,000 cells checked). However, the **newly reconstructed** `src/prepare_exgrva.py` / `src/run_pipeline.py` was not rerun as one continuous full-data execution, and the provenance/selection of the upstream OECD CSV export is not independently certified by these equality checks.
 
 ## Historical original CSV → Parquet: independent check
 
-The historical source file was named `EXGRVA_CHN_JPN_USA_1995_2022.csv` (approximately 1.31 GB, according to the earlier workflow). **It has not been found in the accessible ChatGPT Library, current working files or connected Google Drive during the current recovery attempt.** The original `Joint_Analysis_1995_2022.parquet` (14,784,000 records) has been retained.
+The historical source file was named `EXGRVA_CHN_JPN_USA_1995_2022.csv` (approximately 1.31 GB, according to the earlier workflow). **The original CSV was subsequently recovered from a user-uploaded ZIP on 2026-11-15 and independently compared to the historical Parquet.** The original `Joint_Analysis_1995_2022.parquet` (14,784,000 records) has been retained.
 
 A dedicated verification program is ready at `audit/verify_raw_csv_vs_parquet.py`. Once the **original exact CSV** is available locally, run:
 
@@ -140,7 +140,7 @@ python audit/verify_raw_csv_vs_parquet.py \
 
 It checks complete five-dimensional origin/export dimensions plus `DATAFLOW`, `MEASURE`, `UNIT_MEASURE`, `FREQ`, `TIME_PERIOD`, `UNIT_MULT`; compares `OBS_VALUE` for every retained row; detects duplicate keys, extra or missing keys; and produces SHA-256 source fingerprints, a JSON report, and up to 1,000 mismatch examples. A missing/incorrect source file cannot be replaced by a fresh OECD download without checking edition and exact source bytes.
 
-**Current evidence:** synthetic matched/mismatched-fixture tests are provided. No real-data raw CSV-to-Parquet comparison has been completed in this session because the original CSV is unavailable here. The distinct **2026-11-07 Parquet-to-prepared-matrix reconciliation remains historically verified** and is documented separately.
+**Real-data verification: PASS (2026-11-15).** All **14,784,000 original CSV records** and all **14,784,000 historical Parquet records** were independently decoded. SHA-256 hashes of every complete normalized 11-field record were compared as sorted multisets (preserving multiplicity), with **zero disagreements and zero duplicate full records**. The ZIP contents passed CRC32 verification. File SHA-256 fingerprints, the method, and qualifications are recorded in [`audit/reports/original_csv_to_parquet_verification_2026-11-15.json`](audit/reports/original_csv_to_parquet_verification_2026-11-15.json). This is a full-record cryptographic hash comparison, not a literal SQL join. The distinct **2026-11-07 Parquet-to-prepared-matrix reconciliation remains historically verified**.
 
 ## End-to-end source preparation (OECD export -> manuscript)
 
@@ -190,7 +190,7 @@ If the official input format, measurement units, missing cells, or paper benchma
 
 - The current public GitHub workflow passes Python compilation, synthetic OECD CSV/ZIP ingestion tests, the previously committed manuscript numerical checks, and image/table generation.
 - The original 2026-11-07 five-key comparison of the **historical Parquet to the retained joint CSV** succeeded with all 5,376,000 prepared cells matched, no unmatched/null or duplicate keys, and no numerical differences. The newly reconstructed `src/prepare_exgrva.py` has **not** been run on that complete Parquet in this reconstruction session, and the seven official OECD ZIPs are not published in this repository.
-- The repository has an **implemented source-to-results workflow**, a **successful historical Parquet-to-joint reconciliation**, and a separate **full retained-joint-matrix-to-paper audit**. It does **not** yet establish a newly rerun, independently verified path from the seven original OECD download ZIPs through the current reconstructed scripts.
+- The repository now documents **three independently checked historical stages**: (1) recovered CSV ↔ original Parquet (14,784,000 rows, 2026-11-15), (2) historical Parquet ↔ prepared joint CSV (5,376,000 selected rows, 2026-11-07), and (3) prepared joint CSV ↔ published HHI results (5,376,000 source cells checked). The new repository scripts have not yet been executed in one uninterrupted end-to-end production run.
 
 
 ## Historical audit and supplementary scripts (restored)
