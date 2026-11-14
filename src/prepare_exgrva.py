@@ -39,6 +39,10 @@ INPUT_COLS = ('EXPORTING_AREA','TIME_PERIOD','EXPORTING_ACTIVITY',
 def sql_list(values):
     return '(' + ','.join("'" + str(v).replace("'","''") + "'" for v in values) + ')'
 
+def file_array(files):
+    # DuckDB multi-file readers accept SQL list literals, not SQL tuples.
+    return '[' + ','.join("'" + str(p).replace("'","''") + "'" for p in files) + ']'
+
 def extract_archives(files:list[Path], directory:Path)->list[Path]:
     extracted=[]
     for archive in files:
@@ -72,9 +76,9 @@ def prepare(source:Path, output:Path, strict:bool=True):
         if parquet and csvfiles:
             raise ValueError('Provide either Parquet OR CSV inputs, not both')
         if parquet:
-            read="read_parquet("+sql_list(str(p) for p in parquet)+", union_by_name=true)"
+            read="read_parquet("+file_array(parquet)+", union_by_name=true)"
         elif csvfiles:
-            read="read_csv_auto("+sql_list(str(p) for p in csvfiles)+", union_by_name=true, header=true, sample_size=25000)"
+            read="read_csv_auto("+file_array(csvfiles)+", union_by_name=true, header=true, sample_size=25000)"
         else:
             raise ValueError('No Parquet, CSV, CSV.GZ or ZIP datasets found')
         con=duckdb.connect()
