@@ -3,6 +3,7 @@
 Supply original OECD TiVA EXGRVA CSVs/ZIPs or a historical raw Parquet.
 The upstream source files and prepared matrix stay local, outside GitHub.
 """
+from __future__ import annotations
 from pathlib import Path
 import argparse
 import hashlib
