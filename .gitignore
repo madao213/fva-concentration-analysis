@@ -3,5 +3,20 @@ __pycache__/
 .venv/
 .DS_Store
 *.py[cod]
+
+# Keep all acquired OECD data and local-derived matrices private.
 data/*
 !data/README.md
+*.parquet
+*.csv.gz
+*.zip
+*.duckdb
+*.duckdb.wal
+
+# Local outputs from full-source reconstruction and auditing.
+local_replication/
+audit_output/
+supplementary_output/
+oecd_inputs/
+oecd_exgrva_zips/
+run_manifest.json
