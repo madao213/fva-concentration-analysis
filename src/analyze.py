@@ -104,24 +104,10 @@ def robustness(panel:pd.DataFrame)->pd.DataFrame:
     return pd.DataFrame(out)
 
 def make_figures(annual:pd.DataFrame,panel:pd.DataFrame,output:Path):
-    import matplotlib
-    matplotlib.use('Agg')
-    import matplotlib.pyplot as plt
-    labels={'CHN':'China','JPN':'Japan','USA':'United States'}
-    for cols,name in [(['equal_geo_hhi','equal_industry_hhi'],'figure1_annual_geo_industry_hhi.png'),
-                      (['equal_joint_hhi'],'figure3_annual_joint_hhi.png')]:
-        fig,axes=plt.subplots(1,len(cols),figsize=(7*len(cols),4),squeeze=False)
-        for ax,col in zip(axes[0],cols):
-            for exporter in EXPORTERS:
-                d=annual.loc[annual.exporter.eq(exporter)];ax.plot(d.year,d[col],label=labels[exporter])
-            ax.set(xlabel='Year',ylabel=col.replace('_',' ').title());ax.grid(alpha=.2);ax.legend()
-        fig.tight_layout();fig.savefig(output/name,dpi=170);plt.close(fig)
-    fig,ax=plt.subplots(figsize=(7,5))
-    for exp in EXPORTERS:
-        d=panel.loc[panel.exporter.eq(exp)]
-        ax.scatter(d.geo_hhi,d.industry_hhi,s=5,alpha=.18,label=labels[exp])
-    ax.set(xlabel='Geographic HHI',ylabel='Source-industry HHI');ax.legend();fig.tight_layout()
-    fig.savefig(output/'figure2_geo_vs_industry_hhi.png',dpi=170);plt.close(fig)
+    """Paper-aligned plots generated from the CSVs already written by run()."""
+    from render_figures import generate
+    generate(output.parent)
+
 
 def run(source:Path, output:Path, make_plots:bool=True):
     output.mkdir(parents=True,exist_ok=True)
