@@ -1,0 +1,71 @@
+{
+  "date": "2026-11-15",
+  "status": "PASS",
+  "evidence": "Researcher's local VS Code terminal output provided in conversation; not an independent GitHub Actions big-data run",
+  "platform": "macOS, Python 3.11 virtual environment",
+  "invocation": "python src/run_pipeline.py --source Joint_Analysis_1995_2022.parquet --workspace local_replication --reference EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz",
+  "stages": [
+    {
+      "stage": 1,
+      "name": "Prepare source-area × source-industry matrix",
+      "status": "PASS",
+      "cells": 5376000,
+      "groups": 1344
+    },
+    {
+      "stage": 2,
+      "name": "Compare reconstructed and reference matrices",
+      "status": "PASS",
+      "joined_rows": 5376000,
+      "missing": 0,
+      "max_difference": 0,
+      "beyond_tolerance": 0
+    },
+    {
+      "stage": 3,
+      "name": "Audit matrix",
+      "status": "PASS",
+      "rows": 5376000,
+      "negative_cells": 1128,
+      "negative_value_sum_usd_million": -268.547,
+      "unique_keys": 5376000,
+      "groups": 1344,
+      "minimum_cells_per_group": 4000,
+      "maximum_cells_per_group": 4000
+    },
+    {
+      "stage": 4,
+      "name": "Calculate HHI correlations robustness and figures",
+      "status": "PASS",
+      "industry_year_observations": 1344,
+      "figures_generated": 3,
+      "analysis_result_csvs": 5
+    },
+    {
+      "stage": 5,
+      "name": "Verify manuscript benchmarks",
+      "status": "PASS",
+      "endpoint_benchmarks": 19,
+      "correlation_rows": 9
+    },
+    {
+      "stage": 6,
+      "name": "Generate Tables 1–4 and supplementary outputs",
+      "status": "PASS",
+      "tables_generated": 4,
+      "jpn_c26_china_source_share_1995": 0.038831,
+      "jpn_c26_china_source_share_2022": 0.298684
+    },
+    {
+      "stage": 7,
+      "name": "Write local provenance manifest",
+      "status": "PASS",
+      "terminal_last_line": "SUCCESS. Local outputs: /Users/bobo/Downloads/fva-concentration-analysis-main/local_replication"
+    }
+  ],
+  "scope_limits": [
+    "Complete continuous run starts from retained historical Parquet, not original unconverted OECD CSV.",
+    "Separate full-record original CSV-to-Parquet equality audit completed 2026-11-15 and documented elsewhere.",
+    "User's local run_manifest.json and source data were not transferred to GitHub; this report transcribes observed terminal output."
+  ]
+}
