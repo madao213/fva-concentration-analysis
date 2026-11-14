@@ -1,2 +1,95 @@
-# fva-concentration-analysis
-Replication code and analysis of geographic, industrial, and joint concentration of foreign value added in manufacturing exports, using OECD TiVA data (1995–2022).
+# Geographic, Industrial, and Joint Concentration of Foreign Value Added in Manufacturing Exports
+
+**Replication code — reconstructed from the paper's methodology and retained analytical input data**
+
+This repository accompanies the study *Geographic, Industrial, and Joint Concentration of Foreign Value Added in Manufacturing Exports* by Ming Yang. It analyzes foreign value added (FVA) in manufacturing exports from **China, Japan, and the United States, 1995–2022**, using the **OECD Trade in Value Added (TiVA), 2025 edition, January 2026 revision**, **EXGRVA** indicator.
+
+> **Reproducibility status:** This is a **reconstructed analysis-stage replication package**, not a claim that the original end-to-end source scripts have been recovered. The calculations were rerun using a retained prepared source-economy × source-industry matrix and their principal results checked against the paper. The full input matrix is **not** publicly redistributed. Raw OECD retrieval, classification harmonization and original upstream reconciliation are not included.
+
+## Research question
+
+Does diversification in the foreign economies supplying value added to exports imply diversification in the *industries* where that value added originates?
+
+The paper distinguishes three concentration measures computed from the same FVA matrix:
+
+- **Geographic HHI** — source-economy concentration after summing over source industries.
+- **Source-industry HHI** — source-industry concentration after summing over source economies.
+- **Joint HHI** — concentration across individual source-economy × source-industry pairs.
+
+There are **1,344 exporter–manufacturing industry–year observations** (3 exporters × 16 manufacturing export industries × 28 years). The study also compares an *equal-weighted* average of 16 export-industry HHIs with a *pooled* joint HHI computed after combining value added from all manufacturing export industries.
+
+## Selected findings
+
+| Exporter | Equal-weighted joint HHI change, 1995–2022 | Pooled joint HHI change, 1995–2022 |
+|---|---:|---:|
+| China | +80.5% | +8.6% |
+| Japan | +36.3% | +59.8% |
+| United States | −5.3% | +55.1% |
+
+Excluding residual source-area category **WXD** and renormalizing source shares changes China's pooled joint HHI endpoint comparison to **−12.2%**. Excluding export industry **C19** (coke and refined petroleum) reduces the overall geographic/source-industry Pearson correlation from **0.711** to **0.085**. These are descriptive comparisons, **not causal estimates**.
+
+## Contents
+
+- `src/analyze.py` — HHI calculations; equal-weighted and pooled measures; correlations; C19/WXD sensitivity; figure generation.
+- `src/verify_paper.py` — compares recomputed result tables against published numerical benchmarks, at reported rounding precision.
+- `tests/test_analysis.py` — small synthetic unit tests for HHI properties.
+- `requirements.txt` — Python dependencies.
+- `data/README.md` — expected prepared input format and data use guidance.
+- `results/` — selected computed summary outputs (if present).
+- `figures/` — generated plots (if present).
+- `CITATION.cff` and `LICENSE` — software attribution and permissions.
+
+## Input data
+
+**Not included:** `EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz` — the prepared long matrix that served as the analysis input. Obtain the underlying data from [OECD TiVA](https://www.oecd.org/en/topics/sub-issues/trade-in-value-added.html), and reconstruct the prepared matrix as documented below.
+
+| Column | Description |
+|---|---|
+| `EXPORTING_AREA` | `CHN`, `JPN`, `USA` |
+| `TIME_PERIOD` | 1995–2022 |
+| `EXPORTING_ACTIVITY` | One of 16 manufacturing export-industry codes |
+| `VALUE_ADDED_SOURCE_AREA` | Foreign source economy or `WXD` |
+| `SOURCE_AREA_LABEL` | Readable source label |
+| `VALUE_ADDED_SOURCE_ACTIVITY` | Source-industry code (50 industry categories) |
+| `SOURCE_INDUSTRY_LABEL` | Readable source-industry label |
+| `OBS_VALUE_USD_MILLION` | EXGRVA amount, million current USD |
+
+The prepared matrix excludes domestic value-added cells. Small negative value-added observations are clipped to zero **at the individual cell level**. The baseline includes `WXD`; a sensitivity check excludes it and recomputes the shares. The script verifies expected 3 × 16 × 28 coverage.
+
+**Important:** The repository cannot regenerate the original prepared input from OECD raw downloads, nor does it reproduce the source-level reconciliation or industry-code mapping. Reproducing the full pipeline requires additional upstream materials. Do not publicly redistribute OECD data without checking its terms.
+
+## Run the analysis
+
+Python 3.10+:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# Supply your locally held prepared matrix first:
+# data/EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz
+python src/analyze.py --input data/EXGRVA_Joint_Matrix_Long_1995_2022.csv.gz --output results
+python src/verify_paper.py --results results
+python -m unittest discover -s tests -v
+```
+
+The analysis script also creates illustrative PNG figures in `figures/` when the prepared matrix is available.
+
+## Aggregation matters
+
+Let `J_i` be an export industry's joint HHI and `w_i` its share of total FVA in manufacturing exports.
+
+- **E:** unweighted mean of the 16 `J_i`.
+- **W:** FVA-weighted mean of `J_i`.
+- **P:** joint HHI calculated only *after pooling* source-pair values across all export industries.
+
+**P is not W.** The differences matter to the interpretation of within-industry versus overall manufacturing concentration.
+
+## Validated against the paper
+
+Using the retained prepared matrix locally, the reconstructed analysis matched, within displayed rounding, Table 1 endpoint concentration figures, Table 2 correlations, Table 3 equal-weighted and pooled comparisons, and the selected C19 and WXD sensitivity checks. These validations establish consistency **from the retained prepared data onward**, not upstream raw-data replication.
+
+## Interpretation
+
+HHI describes the *distribution of foreign value added*. It does not directly measure substitutability, disruption costs, or political vulnerability. Cite the accompanying research paper when using its findings and OECD TiVA for the underlying data.
