@@ -125,6 +125,23 @@ python audit/validate_retained_matrix.py \
 
 **Verification boundary:** The **historical Parquet-to-prepared-matrix reconciliation passed on 2026-11-07**, and the retained matrix-to-paper results were independently checked later. The **newly reconstructed upstream preparation program has not been rerun on the complete Parquet or the seven official OECD ZIPs**, and the OECD-download-to-Parquet acquisition/selection stage has not been separately audited. These distinct verification stages must not be conflated.
 
+## Historical original CSV → Parquet: independent check
+
+The historical source file was named `EXGRVA_CHN_JPN_USA_1995_2022.csv` (approximately 1.31 GB, according to the earlier workflow). **It has not been found in the accessible ChatGPT Library, current working files or connected Google Drive during the current recovery attempt.** The original `Joint_Analysis_1995_2022.parquet` (14,784,000 records) has been retained.
+
+A dedicated verification program is ready at `audit/verify_raw_csv_vs_parquet.py`. Once the **original exact CSV** is available locally, run:
+
+```bash
+python audit/verify_raw_csv_vs_parquet.py \
+  --raw /path/to/EXGRVA_CHN_JPN_USA_1995_2022.csv \
+  --parquet /path/to/Joint_Analysis_1995_2022.parquet \
+  --out audit_output/raw_parquet
+```
+
+It checks complete five-dimensional origin/export dimensions plus `DATAFLOW`, `MEASURE`, `UNIT_MEASURE`, `FREQ`, `TIME_PERIOD`, `UNIT_MULT`; compares `OBS_VALUE` for every retained row; detects duplicate keys, extra or missing keys; and produces SHA-256 source fingerprints, a JSON report, and up to 1,000 mismatch examples. A missing/incorrect source file cannot be replaced by a fresh OECD download without checking edition and exact source bytes.
+
+**Current evidence:** synthetic matched/mismatched-fixture tests are provided. No real-data raw CSV-to-Parquet comparison has been completed in this session because the original CSV is unavailable here. The distinct **2026-11-07 Parquet-to-prepared-matrix reconciliation remains historically verified** and is documented separately.
+
 ## End-to-end source preparation (OECD export -> manuscript)
 
 The repository now includes a *source-preparation program* and a **single-command local workflow**. This program is distinct from the previously reconstructed analysis-only code.
