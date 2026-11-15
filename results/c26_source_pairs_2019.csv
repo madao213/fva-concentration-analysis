@@ -1,0 +1,10 @@
+exporter,year,rank,source_area,source_economy,source_industry,share
+CHN,2019,1,KOR,South Korea,C26,0.0820
+CHN,2019,2,TWN,Chinese Taipei,C26,0.0793
+CHN,2019,3,USA,USA,C26,0.0340
+JPN,2019,1,CHN,China,C26,0.0658
+JPN,2019,2,CHN,China,G,0.0484
+JPN,2019,3,USA,USA,C26,0.0288
+USA,2019,1,CHN,China,C26,0.0672
+USA,2019,2,CHN,China,G,0.0447
+USA,2019,3,MEX,Mexico,G,0.0368
