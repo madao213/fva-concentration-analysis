@@ -2,7 +2,7 @@
 
 Figure 1: separate China, Japan and USA panels, with geographic and industry lines.
 Figure 2: country-coloured, hollow circles (excluding C19) and filled diamonds (C19).
-Figure 3: separate China, Japan and USA panels, with annual mean joint HHI.
+Figure 3: separate China, Japan and USA panels, with annual mean joint HHI.\nFigure 4: C26 geographic, industry and joint HHI for 2018–2020.\nFigure 5: C26 top three 2019 source-pair shares, at manuscript precision.
 
 These are regenerated figures, not raster copies taken from the manuscript.
 """
@@ -59,6 +59,74 @@ def scatter(panel,out):
     fig.savefig(out,dpi=200,bbox_inches='tight',facecolor='white')
     plt.close(fig)
 
+
+def c26_line_panels(panel, out):
+    """Figure 4: 2018–2020 C26 concentration by exporter."""
+    fig, axes = plt.subplots(1, 3, figsize=(11.5, 3.7), sharey=True)
+    lines = [
+        ('geo_hhi', 'Geographic HHI', BLUE),
+        ('industry_hhi', 'Source-industry HHI', ORANGE),
+        ('joint_hhi', 'Joint HHI', '#e6b800'),
+    ]
+    for ax, (code, title) in zip(axes, EXPORTERS):
+        subset = panel.loc[
+            (panel.exporter == code) &
+            (panel.export_industry == 'C26') &
+            (panel.year.between(2018, 2020))
+        ].sort_values('year')
+        if len(subset) != 3:
+            raise ValueError(f'Expected three C26 annual rows for {code}')
+        for column, label, color in lines:
+            ax.plot(subset.year, subset[column], label=label, color=color, linewidth=2)
+        ax.set_title(title, fontsize=12, fontweight='bold')
+        ax.set_xticks([2018, 2019, 2020])
+        ax.set_xlim(2018, 2020)
+        ax.set_ylim(0, 0.20)
+        ax.set_yticks([0, .05, .10, .15, .20])
+        ax.grid(axis='y', alpha=.20)
+        ax.spines[['top', 'right']].set_visible(False)
+        ax.tick_params(labelsize=9)
+    fig.legend(*axes[0].get_legend_handles_labels(), loc='lower center',
+               bbox_to_anchor=(.5, -.01), ncol=3, frameon=False, fontsize=9)
+    fig.subplots_adjust(left=.06, right=.99, top=.88, bottom=.25, wspace=.14)
+    fig.savefig(out, dpi=220, bbox_inches='tight', facecolor='white')
+    fig.savefig(out.with_suffix('.svg'), bbox_inches='tight', facecolor='white')
+    plt.close(fig)
+
+
+def c26_source_pair_bars(pairs, out):
+    """Figure 5: published 2019 top-three shares, in all three exporters."""
+    required = {'exporter','year','rank','source_economy','source_industry','share'}
+    if not required.issubset(pairs.columns):
+        raise ValueError('Missing C26 source pair display columns')
+    if len(pairs) != 9 or not pairs.year.eq(2019).all():
+        raise ValueError('Expected nine source pairs from 2019')
+    fig, axes = plt.subplots(1, 3, figsize=(11.5, 3.7), sharex=True)
+    for ax, (code, title) in zip(axes, EXPORTERS):
+        sub = pairs.loc[pairs.exporter.eq(code)].sort_values('rank')
+        if len(sub) != 3 or sub['rank'].tolist() != [1, 2, 3]:
+            raise ValueError(f'Expected ranks 1 to 3 for {code}')
+        labels = (sub.source_economy + ' / ' + sub.source_industry).tolist()
+        values = (100 * sub.share).to_numpy()
+        bars = ax.barh(range(3), values, color=BLUE, height=.5)
+        ax.set_yticks(range(3), labels, fontsize=8)
+        ax.invert_yaxis()
+        ax.set_title(f'{title} (2019)', fontsize=12, fontweight='bold')
+        ax.set_xlim(0, 10)
+        ax.set_xticks([0, 2, 4, 6, 8, 10],
+                      ['0%', '2%', '4%', '6%', '8%', '10%'])
+        ax.grid(axis='x', alpha=.2)
+        ax.set_axisbelow(True)
+        ax.spines[['top','right','left']].set_visible(False)
+        ax.tick_params(axis='y', length=0)
+        for bar, value in zip(bars, values):
+            ax.text(value + .15, bar.get_y() + bar.get_height()/2,
+                    f'{value:.2f}%', ha='left', va='center', fontsize=8)
+    fig.subplots_adjust(left=.13, right=.99, top=.85, bottom=.16, wspace=.67)
+    fig.savefig(out, dpi=220, bbox_inches='tight', facecolor='white')
+    fig.savefig(out.with_suffix('.svg'), bbox_inches='tight', facecolor='white')
+    plt.close(fig)
+
 def generate(root=ROOT):
     annual=pd.read_csv(root/'results/annual_hhi.csv')
     panel=pd.read_csv(root/'results/industry_year_hhi.csv')
@@ -72,6 +140,9 @@ def generate(root=ROOT):
     scatter(panel,out/'figure2_geo_vs_industry_hhi.png')
     line_panels(annual,[('equal_joint_hhi','Mean joint HHI',BLUE)],
                 out/'figure3_annual_joint_hhi.png',(0,.045),[0,.01,.02,.03,.04])
+    c26_line_panels(panel, out/'figure4_c26_concentration_2018_2020.png')
+    pairs=pd.read_csv(root/'results/c26_source_pairs_2019.csv')
+    c26_source_pair_bars(pairs, out/'figure5_c26_top_source_pairs_2019.png')
     for image in sorted(out.glob('*.png')):
         print(f'{image.relative_to(root)}: {image.stat().st_size:,} bytes')
 
