@@ -1,9 +1,9 @@
 cff-version: 1.2.0
-message: "If you use these research materials, please cite the accompanying research paper."
-title: "Geographic, Industrial, and Joint Concentration of Foreign Value Added in Manufacturing Exports: Analysis Code"
+message: "If you use these research materials, cite the accompanying paper and OECD TiVA."
+title: "Foreign Production Structure and Economic Security Policy in China, Japan, and the US: Replication Code"
 authors:
   - family-names: Yang
     given-names: Ming
-version: 1.0.0
-date-released: 2026-11-15
+version: 1.1.0
+date-released: 2026-11-16
 type: software
