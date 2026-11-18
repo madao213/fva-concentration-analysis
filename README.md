@@ -4,7 +4,7 @@ This repository contains the replication code, published-precision results, figu
 
 ## Research question
 
-Foreign production relationships have both an economic structure and a political significance. The study asks what geographic, source-industry, and joint measures of foreign value added reveal about economic dependence, and how governments select production capabilities to support or restrict.
+The study asks what different measures of foreign production reveal about economic dependence and how the production problems identified by governments relate to their policy choices.
 
 Three HHI measures describe the same foreign value added under different groupings.
 
