@@ -8,6 +8,8 @@ on:
       - 'src/analyze.py'
       - 'results/annual_hhi.csv'
       - 'results/industry_year_hhi.csv'
+      - 'results/c26_source_pairs_2019.csv'
+      - 'requirements.txt'
       - '.github/workflows/generate-figures.yml'
 
 permissions:
@@ -25,14 +27,21 @@ jobs:
           python-version: '3.11'
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
-      - name: Recreate all three figures
+      - name: Recreate all five figures
         run: python src/render_figures.py
-      - name: Commit generated PNG files
+      - name: Commit generated figures
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add figures/figure1_annual_geo_industry_hhi.png figures/figure2_geo_vs_industry_hhi.png figures/figure3_annual_joint_hhi.png
+          git add \
+            figures/figure1_annual_geo_industry_hhi.png \
+            figures/figure2_geo_vs_industry_hhi.png \
+            figures/figure3_annual_joint_hhi.png \
+            figures/figure4_c26_concentration_2018_2020.png \
+            figures/figure4_c26_concentration_2018_2020.svg \
+            figures/figure5_c26_top_source_pairs_2019.png \
+            figures/figure5_c26_top_source_pairs_2019.svg
           if ! git diff --cached --quiet; then
-            git commit -m "Add reproducible concentration figures"
+            git commit -m "Regenerate manuscript figures"
             git push
           fi
