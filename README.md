@@ -1,10 +1,10 @@
-# Foreign Production Structure and Economic Security Policy in China, Japan, and the US
+# Foreign Production Concentration and Economic Security Policy in China, Japan, and the US
 
 This repository contains the replication code, published-precision results, figures, and data audit records for a study of foreign value added in manufacturing exports and economic security policy. The analysis covers China, Japan, and the United States from 1995 to 2022 using the OECD Trade in Value Added (TiVA) 2025 edition, January 2026 revision, EXGRVA indicator.
 
 ## Research question
 
-The study asks what different measures of foreign production reveal about economic dependence and how the production problems identified by governments relate to their policy choices.
+The study asks how the dimensions used to describe source contributions, aggregation across manufacturing export industries, and the treatment of residual foreign source areas change observed concentration, and how those descriptions relate to the capabilities and constraints identified in semiconductor economic security policy.
 
 Three HHI measures describe the same foreign value added under different groupings.
 
@@ -24,7 +24,7 @@ The paper also examines C26, computer, electronic and optical products, against 
 | Japan | +36.3% | +59.8% |
 | United States | −5.3% | +55.1% |
 
-China's geographic concentration declined while its source-industry concentration increased. The geographic and source-industry HHIs have a Pearson correlation of 0.711 in the full 1,344-observation panel, compared with 0.085 after excluding C19, coke and refined petroleum products. Excluding the residual WXD source area changes China's pooled joint HHI comparison from +8.6% to −12.2%.
+China's geographic concentration declined while its source-industry concentration increased. The geographic and source-industry HHIs have a Pearson correlation of 0.711 in the full 1,344-observation panel, compared with 0.085 after excluding C19, coke and refined petroleum products. Excluding the residual WXD source area changes China's pooled joint HHI comparison from +8.6% to −12.2%. In the United States, C19's foreign-value-added share increased from 7.76% to 21.30% between 1995 and 2022. The weighted-minus-equal-weighted joint HHI gap rose by 0.0091532, with 97.5% of the net change attributable to changes in industry FVA weights. C19 contributed +0.0114615 and C26 −0.0025231 to that gap change; removing C19 is a sensitivity check, not the baseline.
 
 The C26 comparison is distinct from these long-term manufacturing summaries. **Figure 4** traces its three concentration measures in 2018–2020. **Figure 5** compares the three largest source economy and source industry pairs for each exporter in the common year 2019. For Japan and the United States, 2020 remains the more recent full predecision year in the policy discussion.
 
@@ -91,8 +91,8 @@ The recovered original OECD CSV and historical Parquet each contained 14,784,000
 
 On November 15, 2026, a full seven-stage run of `src/run_pipeline.py` on the historical Parquet completed successfully on the researcher's Mac. The run checked 19 reported endpoint benchmarks and nine correlation rows, and generated the first three paper figures, Tables 1–4, and supplementary analyses. This verification record predates the later Figure 4 and Figure 5 presentation additions. Those figures now use the checked public C26 annual HHI values and the displayed 2019 source-pair shares.
 
-Detailed records remain in [audit/reports](audit/reports). Large source data stay local.
+The [2026-11-23 manuscript verification report](audit/verification_2026-11-23.md) documents a separate recalculation of the principal manuscript statistics from the retained prepared EXGRVA source-pair matrix and a focused review of official policy sources. Earlier raw-data reconciliation records remain in [audit/reports](audit/reports). Large source data stay local.
 
 ## Citation
 
-The accompanying writing sample is titled *Foreign Production Structure and Economic Security Policy in China, Japan, and the US*. The repository's software citation metadata is in [CITATION.cff](CITATION.cff). Cite the OECD TiVA database when using its derived statistics.
+The accompanying writing sample is titled *Foreign Production Concentration and Economic Security Policy in China, Japan, and the US*. The repository's software citation metadata is in [CITATION.cff](CITATION.cff). Cite the OECD TiVA database when using its derived statistics.
