@@ -26,3 +26,15 @@ The common-country source-pair display in manuscript Figure 5 uses **2019 for al
 - United States, October 2022 BIS restrictions: https://media.bis.gov/press-release/commerce-implements-new-export-controls-advanced-computing-semiconductor-manufacturing-items-peoples
 
 For the numerical replication and all five figures, return to the [root README](../README.md).
+
+## Verification update — 2026-11-23
+
+The accompanying writing sample is now titled *Foreign Production Concentration and Economic Security Policy in China, Japan, and the US*. An independent recalculation of key HHI results from the retained prepared source-pair matrix is documented in [audit/verification_2026-11-23.md](../audit/verification_2026-11-23.md).
+
+Central documentary descriptions were checked against the previously cited official source materials:
+
+- China: the 2014 integrated-circuit industry guidelines discuss financing, innovation, imported integrated circuits, and coordination across production stages; the 2020 State Council measures include tax relief, investment and R&D support; the October 2020 NDRC statement criticizes inadequately planned semiconductor investment.
+- Japan: the June 2021 METI strategy discusses establishing domestic fabrication; the June 2022 JASM approval and the TSMC announcement document a maximum subsidy of 476 billion yen and production plans involving 22/28 nm and 12/16 nm processes. The METI 2022 trade white paper reports 35.9% import dependence for integrated circuits and Taiwan accounting for over half of high-performance integrated-circuit imports.
+- United States: the June 2021 White House supply-chain review discusses US fabrication capacity and the cost of advanced facilities; the October 2022 BIS announcement documents restrictions on selected advanced chips, manufacturing equipment, and covered activities involving China.
+
+For further primary records see [METI semiconductor production-plan approvals](https://www.meti.go.jp/policy/mono_info_service/joho/laws/semiconductor/semiconductor_plan.html) and the [METI 2022 trade white paper](https://www.meti.go.jp/report/tsuhaku2022/2022honbun/index.html). The comparison relates statistical descriptions of C26 export value added to documentary descriptions of specific policy problems; it does not estimate a causal effect of concentration on policy choice. These spot checks do not amount to an exhaustive independent assessment of every cited policy record.
